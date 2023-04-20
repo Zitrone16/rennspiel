@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser.min.js"></script>
+</head>
+
+<body>
+
+    <script>
+
+        var worldWidth = 1150;
+        var worldHeight = 669
+        var config = {
+            type: Phaser.AUTO,
+            width: worldWidth,
+            height: worldHeight,
+            parent: 'phaser-example',
+            physics: {
+                default: 'matter',
+                matter: {
+                    debug: false,
+                    gravity: {
+                        x: 0,
+                        y: 0
+                    }
+                }
+            },
+            scene: {
+                preload: preload,
+                
+                create: create,
+                update: update
+            }
+        };
+
+        var game = new Phaser.Game(config);
+        var cursors;
+        var coin;
+        var player;
+        var score = 0;
+        var scoreText;
+        var coinPositions = [{x: 200, y: 150}, {x: 400, y: 120}, {x: 600, y: 140}, {x: 750, y: 150}, {x: 850, y: 530}, {x: 150, y: 530}];
+        var coinPositionIndex = 0;
+
+        function preload() {
+            //this.load.setBaseURL('http://labs.phaser.io');
+
+            //this.load.image('sky', 'assets/skies/space3.png');
+            //this.load.image('logo', 'assets/sprites/phaser3-logo.png');
+            //this.load.image('red', 'assets/particles/red.png');
+
+            //this.load.setBaseURL('http://labs.phaser.io');
+
+            this.load.image('racetrack', './assets/sky.png');
+            this.load.image('logo', './assets/swiss_tanks_logo.png');
+            this.load.image('red', './assets/red.png');
+            this.load.image('tank', '/assets/tank.png');
+            this.load.image('reifen', '/assets/reifen.png');
+            this.load.image('reifen2', '/assets/reifen2.png');
+            this.load.image('coin', '/assets/coin.png');
+        }
+
+        function create() {
+            cursors = this.input.keyboard.createCursorKeys();
+
+            this.add.image(worldWidth / 2, worldHeight / 2, 'racetrack');
+
+            var particles = this.add.particles('red');
+
+            var emitter = particles.createEmitter({
+                speed: 150,
+                scale: { start: 0.5, end: 0 },
+                blendMode: 'DARKEN'
+            });
+
+            /*var logo = this.physics.add.image(400, 100, 'logo');
+    
+            logo.setVelocity(100, 200);s
+            logo.setBounce(1, 1);
+            logo.setCollideWorldBounds(true);*/
+
+            //const path = '0 307 0 67 8 55 12 53 57 128 86 94 128 136 148 103 190 159 210 135 222 149 248 109 267 133 293 93 321 128 361 75 381 97 439 4 523 117 551 78 563 92 569 93 603 38 637 99 654 53 701 154 729 109 750 140 800 66 800 307';
+
+            const path = '40 0 40 20 100 20 100 80 40 80 40 100 0 50'; //-400 -150 350 0 350 -400 0 -400 -400 -150'
+
+
+            /*var verts = this.matter.verts.fromPath(path);
+            
+            const bounce = this.matter.add.fromVertices(worldWidth / 2, worldHeight / 2, verts, { ignoreGravity: true, isStatic: true}, true, 0.01, 10);
+            console.log(bounce)*/
+
+            const drawTiresHorizontal = (startX, endX, y) => {
+                for (let x = startX; x < endX; x = x + 25) {
+                    tires.push({ x: x, y: y });
+
+                }
+            }
+
+            const drawTiresVertical = (startY, endY, x) => {
+                for (let y = startY; y < endY; y = y + 25) {
+                    tires.push({ x: x, y: y });
+
+                }
+            }
+
+            
+            const drawTiresDiagonal = (startY, endY, offsetX, offsetY) => {
+                for (let y = startY; y < endY; y = y + 25) {
+                    tires.push({ x: y +offsetX, y: y+offsetY });
+
+                }
+            }
+
+            const drawTiresDiagonalUp = (startY, endY, offsetX, offsetY) => {
+                for (let y = startY; y < endY; y = y + 25) {
+                    tires.push({ x: y +offsetX, y:startY - y+offsetY });
+
+                }
+            }
+
+
+
+            let tires = [
+                { x: 200, y: 50 },
+                /*{x: 225, y: 50},
+                {x: 600, y: 50},*/
+                { x: 300, y: 200 },
+                { x: 250, y: 225 },
+                { x: 240, y: 250 },
+                { x: 210, y: 238 },
+                { x: 210, y: 275 },
+                { x: 210, y: 300 },
+                { x: 210, y: 325 },
+                { x: 200, y: 350 },
+                { x: 200, y: 375 },
+                { x: 200, y: 400 },
+                { x: 200, y: 425 },
+                { x: 225, y: 440 },
+                { x: 250, y: 455 },
+                { x: 275, y: 465 },
+                { x: 285, y: 455 },
+                { x: 290, y: 460 },
+               
+                
+
+            ];
+
+
+            drawTiresHorizontal(100, 800, 50);
+
+
+            drawTiresHorizontal(50, 350, 600);
+
+            drawTiresVertical(100, 550, 25);
+
+            drawTiresVertical(200, 600, 1100);
+
+            drawTiresHorizontal(700, 1100, 575);
+
+            drawTiresHorizontal(310, 700, 190);
+
+            drawTiresHorizontal(500, 675, 500);
+
+            drawTiresHorizontal(430, 700, 560);
+
+            drawTiresHorizontal(780, 955, 455);
+
+
+            
+            drawTiresDiagonal(0, 250, 860, 60);
+            drawTiresDiagonalUp(0, 250, 260, 470);
+            drawTiresDiagonal(0, 120, 700, 200);
+            drawTiresDiagonal(0, 170, 600, 300);
+            drawTiresVertical(350, 475, 950);
+            drawTiresHorizontal(450, 600, 300);
+            drawTiresHorizontal(800, 1000, 325);
+            
+
+            tires.forEach((tire) => {
+
+                var circ = this.matter.add.image(tire.x + Math.random() * 10, tire.y + Math.random() * 10, Math.random() > 0.5 ? 'reifen' : 'reifen2');
+
+                //  Change the body to a Circle with a radius of 48px
+                circ.setBody({
+                    type: 'circle',
+                    radius: 20
+                });
+
+                circ.setStatic(true)
+            })
+
+
+
+            //  Just make the body move around and bounce
+            /*circ.setVelocity(6, 3);
+            circ.setAngularVelocity(0.01);
+            circ.setBounce(1);
+            circ.setFriction(0, 0, 0);*/
+
+
+
+            //player = this.physics.add.image(200, 200, 'tank');
+
+            player = this.matter.add.image(100, 100, 'tank');
+            coin = this.matter.add.image(200, 200, 'coin');
+
+            this.matter.world.on('collisionstart', (event, bodyA, bodyB) => {
+                if (coin && bodyB.id === coin.body.id) {
+                    score = score + 10;
+                    scoreText.setText('Score: ' + score );
+                    this.matter.world.remove(bodyB);
+                    bodyB.gameObject.destroy();
+                    coinPositionIndex++;
+                    const coinPosition = coinPositions[coinPositionIndex % coinPositions.length];
+
+                    coin = this.matter.add.image(coinPosition.x, coinPosition.y, 'coin');
+                }
+            });
+
+            player.setFrictionAir(0.1);
+            player.setMass(30);
+            player.setFixedRotation();
+
+            //player.setCollideWorldBounds(true);
+            //player.setBounce(1, 1);
+
+            this.matter.world.setBounds(0, 0, worldWidth, worldHeight);
+
+            scoreText = this.add.text(16,16, 'Score: ');
+
+            emitter.startFollow(player);
+
+        }
+
+        function update() {
+
+            if (cursors.left.isDown) {
+                player.setAngularVelocity(-0.05);
+            } else if (cursors.right.isDown) {
+                player.setAngularVelocity(0.05);
+            }
+
+            if (cursors.up.isDown) {
+                player.thrust(0.04);
+
+            
+            }
+        }
+
+        
+    </script>
+
+</body>
+
+</html>
